@@ -27,7 +27,11 @@ export function getProvider() {
   if (!window.ethereum) {
     throw new Error("MetaMask tidak terdeteksi. Pasang ekstensi MetaMask terlebih dahulu.");
   }
-  return new BrowserProvider(window.ethereum);
+  // batchMaxCount: 1 mematikan request batching bawaan ethers v6.
+  // MetaMask kerap gagal menangani batch JSON-RPC, dan ethers melaporkannya
+  // sebagai "could not coalesce error". Tanpa batching sedikit lebih banyak
+  // request, tapi jauh lebih stabil.
+  return new BrowserProvider(window.ethereum, undefined, { batchMaxCount: 1 });
 }
 
 /** Contract read-only, tidak butuh tanda tangan pengguna. */
@@ -70,29 +74,34 @@ export const ROLE_LABEL = {
 };
 
 /**
- * Mengumpulkan daftar proyek dari event ProjectCreated.
- * Pendekatan ini dipilih agar tidak perlu indexer terpisah untuk prototype.
+ * Mengumpulkan daftar proyek dengan menelusuri id dari 1 sampai nextProjectId.
+ *
+ * Sebelumnya ini memakai queryFilter(ProjectCreated), tetapi itu memicu
+ * eth_getLogs dari blok 0. RPC bawaan MetaMask membatasi rentang blok dan
+ * menolak permintaan seluas itu, sehingga daftar proyek gagal dimuat.
+ * Menelusuri id jauh lebih andal karena hanya memakai eth_call biasa.
  */
 export async function fetchProjects(account) {
   const contract = await getReadContract();
-  const events = await contract.queryFilter(contract.filters.ProjectCreated());
+  const nextId = await contract.nextProjectId();
 
   const projects = [];
-  for (const ev of events) {
-    const projectId = ev.args.projectId;
-    const project = await contract.getProject(projectId);
-    const role = roleOf(project, account);
+  for (let id = 1n; id < nextId; id++) {
+    const project = await contract.getProject(id);
+    const milestones = await contract.getMilestones(id);
+    const totalAmount = milestones.reduce((sum, m) => sum + m.amount, 0n);
+
     projects.push({
-      projectId,
+      projectId: id,
       title: project.title,
       client: project.client,
       freelancer: project.freelancer,
       arbitrator: project.arbitrator,
       reviewPeriod: project.reviewPeriod,
       createdAt: project.createdAt,
-      totalAmount: ev.args.totalAmount,
-      milestoneCount: ev.args.milestoneCount,
-      role,
+      totalAmount,
+      milestoneCount: BigInt(milestones.length),
+      role: roleOf(project, account),
     });
   }
   return projects.reverse(); // terbaru di atas
@@ -153,6 +162,12 @@ export function humanizeError(err) {
 
   if (err.message?.includes("insufficient funds")) {
     return "Saldo Sepolia ETH tidak cukup. Isi lewat faucet terlebih dahulu.";
+  }
+  if (err.message?.includes("coalesce")) {
+    return "Gagal membaca data dari MetaMask. Muat ulang halaman; bila berulang, periksa jaringan wallet sudah di Sepolia.";
+  }
+  if (err.message?.includes("could not decode result data")) {
+    return "Contract tidak ditemukan di alamat ini. Pastikan wallet berada di jaringan Sepolia dan VITE_CONTRACT_ADDRESS sudah benar.";
   }
   return err.shortMessage ?? err.message ?? String(err);
 }
