@@ -50,25 +50,52 @@ npx hardhat test
 
 ### 2. Deploy ke Sepolia
 
-Siapkan `.env` di root (lihat `.env.example`):
+**Tidak ada `.env` di root.** Private key disimpan di keystore terenkripsi Hardhat, bukan
+file plaintext, supaya tidak mungkin ikut ter-commit. Cukup sekali set:
 
+```bash
+npx hardhat keystore set PRIVATE_KEY
 ```
-SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/...
-PRIVATE_KEY=0x...
-```
+
+Akan muncul dua prompt: password keystore (bikin baru, dipakai tiap deploy) lalu private
+key-nya. Ketikan tidak ditampilkan di layar — itu normal.
 
 > Gunakan wallet **sekali pakai**. Jangan pernah memakai private key wallet yang memegang
 > aset asli.
+
+RPC Sepolia sudah punya default publik di `hardhat.config.ts`, jadi tidak perlu daftar
+Infura/Alchemy. Set `SEPOLIA_RPC_URL` hanya bila ingin memakai endpoint sendiri.
 
 ```bash
 npm run deploy:sepolia
 ```
 
-Salin alamat hasil deploy, lalu verify agar source code terbaca publik:
+Script akan mencetak alamat deployer dan saldonya, lalu berhenti bila saldo masih 0 —
+isi dulu lewat faucet, baru jalankan ulang.
+
+### 2b. Verifikasi source code
+
+Blockscout dan Sourcify tidak memerlukan API key:
 
 ```bash
-npx hardhat verify --network sepolia <ALAMAT_CONTRACT>
+npx hardhat verify blockscout --network sepoliaVerify <ALAMAT_CONTRACT>
+npx hardhat verify sourcify   --network sepoliaVerify <ALAMAT_CONTRACT>
 ```
+
+`sepoliaVerify` adalah jaringan kembar tanpa `accounts`. Verifikasi hanya mengunggah source
+code dan tidak menandatangani transaksi, sehingga tidak perlu membuka keystore dan tidak
+ada prompt password.
+
+Etherscan opsional dan butuh API key gratis dari etherscan.io. Klaim "dapat diaudit siapa
+pun" sudah terpenuhi lewat Blockscout dan Sourcify.
+
+### Deployment yang sedang aktif
+
+| | |
+|---|---|
+| Alamat | `0xD1325AB34C853B47678D18bC1C0cEdC70d1Ba576` |
+| Jaringan | Sepolia (chainId 11155111) |
+| Source code | [Blockscout](https://eth-sepolia.blockscout.com/address/0xD1325AB34C853B47678D18bC1C0cEdC70d1Ba576#code) · [Sourcify](https://sourcify.dev/server/repo-ui/11155111/0xD1325AB34C853B47678D18bC1C0cEdC70d1Ba576) (`exact_match`) |
 
 ### 3. Front-end
 

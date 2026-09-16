@@ -36,6 +36,16 @@ const config: HardhatUserConfig = {
       url: process.env.SEPOLIA_RPC_URL ?? "https://rpc.sepolia.ethpandaops.io",
       accounts: [configVariable("PRIVATE_KEY")],
     },
+    // Jaringan kembar khusus `hardhat verify`, sengaja TANPA accounts.
+    // Verifikasi hanya mengunggah source code ke block explorer dan tidak
+    // menandatangani transaksi apa pun, jadi private key tidak diperlukan.
+    // Tanpa accounts, Hardhat tidak perlu membuka keystore sehingga tidak
+    // ada prompt password sama sekali.
+    sepoliaVerify: {
+      type: "http",
+      chainType: "l1",
+      url: process.env.SEPOLIA_RPC_URL ?? "https://rpc.sepolia.ethpandaops.io",
+    },
   },
 };
 
