@@ -1,0 +1,28 @@
+# Secrets - JANGAN PERNAH di-commit
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Hardhat
+artifacts/
+cache/
+typechain-types/
+types/
+ignition/deployments/
+
+# Build output
+frontend/dist/
+frontend/node_modules/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

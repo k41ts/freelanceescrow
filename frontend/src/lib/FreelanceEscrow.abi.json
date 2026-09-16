@@ -1,0 +1,681 @@
+﻿[
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "sent",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "uint256",
+                           "name":  "required",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "IncorrectAmount",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "InvalidAddress",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "enum FreelanceEscrow.MilestoneState",
+                           "name":  "current",
+                           "type":  "uint8"
+                       },
+                       {
+                           "internalType":  "enum FreelanceEscrow.MilestoneState",
+                           "name":  "required",
+                           "type":  "uint8"
+                       }
+                   ],
+        "name":  "InvalidState",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "MilestoneNotFound",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "NoMilestones",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "NotArbitrator",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "NotClient",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "NotFreelancer",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "NotParticipant",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "ProjectNotFound",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "ReentrancyGuardReentrantCall",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "nowTs",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "uint256",
+                           "name":  "releasableAt",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "ReviewPeriodNotOver",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "TransferFailed",
+        "type":  "error"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "ZeroAmount",
+        "type":  "error"
+    },
+    {
+        "anonymous":  false,
+        "inputs":  [
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  true,
+                           "internalType":  "address",
+                           "name":  "raisedBy",
+                           "type":  "address"
+                       }
+                   ],
+        "name":  "DisputeRaised",
+        "type":  "event"
+    },
+    {
+        "anonymous":  false,
+        "inputs":  [
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "bool",
+                           "name":  "releasedToFreelancer",
+                           "type":  "bool"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "uint256",
+                           "name":  "amount",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "DisputeResolved",
+        "type":  "event"
+    },
+    {
+        "anonymous":  false,
+        "inputs":  [
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  true,
+                           "internalType":  "address",
+                           "name":  "freelancer",
+                           "type":  "address"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "uint256",
+                           "name":  "amount",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "MilestoneApproved",
+        "type":  "event"
+    },
+    {
+        "anonymous":  false,
+        "inputs":  [
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  true,
+                           "internalType":  "address",
+                           "name":  "freelancer",
+                           "type":  "address"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "uint256",
+                           "name":  "amount",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "address",
+                           "name":  "triggeredBy",
+                           "type":  "address"
+                       }
+                   ],
+        "name":  "MilestoneAutoReleased",
+        "type":  "event"
+    },
+    {
+        "anonymous":  false,
+        "inputs":  [
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "uint256",
+                           "name":  "amount",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "MilestoneFunded",
+        "type":  "event"
+    },
+    {
+        "anonymous":  false,
+        "inputs":  [
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  true,
+                           "internalType":  "address",
+                           "name":  "client",
+                           "type":  "address"
+                       },
+                       {
+                           "indexed":  true,
+                           "internalType":  "address",
+                           "name":  "freelancer",
+                           "type":  "address"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "address",
+                           "name":  "arbitrator",
+                           "type":  "address"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "uint256",
+                           "name":  "reviewPeriod",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "uint256",
+                           "name":  "milestoneCount",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "uint256",
+                           "name":  "totalAmount",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "string",
+                           "name":  "title",
+                           "type":  "string"
+                       }
+                   ],
+        "name":  "ProjectCreated",
+        "type":  "event"
+    },
+    {
+        "anonymous":  false,
+        "inputs":  [
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  true,
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "string",
+                           "name":  "cid",
+                           "type":  "string"
+                       },
+                       {
+                           "indexed":  false,
+                           "internalType":  "uint256",
+                           "name":  "submittedAt",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "WorkSubmitted",
+        "type":  "event"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "approve",
+        "outputs":  [
+
+                    ],
+        "stateMutability":  "nonpayable",
+        "type":  "function"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "autoRelease",
+        "outputs":  [
+
+                    ],
+        "stateMutability":  "nonpayable",
+        "type":  "function"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "address",
+                           "name":  "freelancer",
+                           "type":  "address"
+                       },
+                       {
+                           "internalType":  "address",
+                           "name":  "arbitrator",
+                           "type":  "address"
+                       },
+                       {
+                           "internalType":  "uint256",
+                           "name":  "reviewPeriod",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "uint256[]",
+                           "name":  "milestoneAmounts",
+                           "type":  "uint256[]"
+                       },
+                       {
+                           "internalType":  "string",
+                           "name":  "title",
+                           "type":  "string"
+                       }
+                   ],
+        "name":  "createProject",
+        "outputs":  [
+                        {
+                            "internalType":  "uint256",
+                            "name":  "projectId",
+                            "type":  "uint256"
+                        }
+                    ],
+        "stateMutability":  "nonpayable",
+        "type":  "function"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "deposit",
+        "outputs":  [
+
+                    ],
+        "stateMutability":  "payable",
+        "type":  "function"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "getMilestoneCount",
+        "outputs":  [
+                        {
+                            "internalType":  "uint256",
+                            "name":  "",
+                            "type":  "uint256"
+                        }
+                    ],
+        "stateMutability":  "view",
+        "type":  "function"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "getMilestones",
+        "outputs":  [
+                        {
+                            "components":  [
+                                               {
+                                                   "internalType":  "uint256",
+                                                   "name":  "amount",
+                                                   "type":  "uint256"
+                                               },
+                                               {
+                                                   "internalType":  "enum FreelanceEscrow.MilestoneState",
+                                                   "name":  "state",
+                                                   "type":  "uint8"
+                                               },
+                                               {
+                                                   "internalType":  "string",
+                                                   "name":  "cid",
+                                                   "type":  "string"
+                                               },
+                                               {
+                                                   "internalType":  "uint256",
+                                                   "name":  "submittedAt",
+                                                   "type":  "uint256"
+                                               }
+                                           ],
+                            "internalType":  "struct FreelanceEscrow.Milestone[]",
+                            "name":  "",
+                            "type":  "tuple[]"
+                        }
+                    ],
+        "stateMutability":  "view",
+        "type":  "function"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "getProject",
+        "outputs":  [
+                        {
+                            "components":  [
+                                               {
+                                                   "internalType":  "address",
+                                                   "name":  "client",
+                                                   "type":  "address"
+                                               },
+                                               {
+                                                   "internalType":  "address",
+                                                   "name":  "freelancer",
+                                                   "type":  "address"
+                                               },
+                                               {
+                                                   "internalType":  "address",
+                                                   "name":  "arbitrator",
+                                                   "type":  "address"
+                                               },
+                                               {
+                                                   "internalType":  "uint256",
+                                                   "name":  "reviewPeriod",
+                                                   "type":  "uint256"
+                                               },
+                                               {
+                                                   "internalType":  "uint256",
+                                                   "name":  "createdAt",
+                                                   "type":  "uint256"
+                                               },
+                                               {
+                                                   "internalType":  "string",
+                                                   "name":  "title",
+                                                   "type":  "string"
+                                               }
+                                           ],
+                            "internalType":  "struct FreelanceEscrow.Project",
+                            "name":  "",
+                            "type":  "tuple"
+                        }
+                    ],
+        "stateMutability":  "view",
+        "type":  "function"
+    },
+    {
+        "inputs":  [
+
+                   ],
+        "name":  "nextProjectId",
+        "outputs":  [
+                        {
+                            "internalType":  "uint256",
+                            "name":  "",
+                            "type":  "uint256"
+                        }
+                    ],
+        "stateMutability":  "view",
+        "type":  "function"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "raiseDispute",
+        "outputs":  [
+
+                    ],
+        "stateMutability":  "nonpayable",
+        "type":  "function"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       }
+                   ],
+        "name":  "releasableAt",
+        "outputs":  [
+                        {
+                            "internalType":  "uint256",
+                            "name":  "",
+                            "type":  "uint256"
+                        }
+                    ],
+        "stateMutability":  "view",
+        "type":  "function"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "bool",
+                           "name":  "releaseToFreelancer",
+                           "type":  "bool"
+                       }
+                   ],
+        "name":  "resolveDispute",
+        "outputs":  [
+
+                    ],
+        "stateMutability":  "nonpayable",
+        "type":  "function"
+    },
+    {
+        "inputs":  [
+                       {
+                           "internalType":  "uint256",
+                           "name":  "projectId",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "uint256",
+                           "name":  "milestoneIndex",
+                           "type":  "uint256"
+                       },
+                       {
+                           "internalType":  "string",
+                           "name":  "cid",
+                           "type":  "string"
+                       }
+                   ],
+        "name":  "submitWork",
+        "outputs":  [
+
+                    ],
+        "stateMutability":  "nonpayable",
+        "type":  "function"
+    }
+]
