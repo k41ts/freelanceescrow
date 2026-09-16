@@ -11,7 +11,11 @@
 
 const PINATA_JWT = import.meta.env.VITE_PINATA_JWT ?? "";
 const PINATA_GATEWAY = import.meta.env.VITE_PINATA_GATEWAY ?? "https://gateway.pinata.cloud";
-const PINATA_UPLOAD_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
+
+// API v3. Endpoint lama api.pinata.cloud/pinning/pinFileToIPFS sudah tidak
+// muncul lagi di dokumentasi Pinata, dan bentuk responsnya pun berbeda:
+// v3 mengembalikan CID di data.cid, bukan IpfsHash.
+const PINATA_UPLOAD_URL = "https://uploads.pinata.cloud/v3/files";
 
 export function isPinataConfigured() {
   return PINATA_JWT.length > 0;
@@ -35,10 +39,11 @@ export async function uploadToIpfs(file) {
 
   const form = new FormData();
   form.append("file", file);
-  form.append(
-    "pinataMetadata",
-    JSON.stringify({ name: file.name, keyvalues: { app: "freelance-escrow" } })
-  );
+  form.append("name", file.name);
+  // WAJIB diisi "public". Default Pinata adalah "private", dan file private
+  // tidak bisa dibuka lewat gateway publik - upload akan terlihat sukses
+  // tetapi tautan CID-nya mati.
+  form.append("network", "public");
 
   const res = await fetch(PINATA_UPLOAD_URL, {
     method: "POST",
@@ -48,12 +53,18 @@ export async function uploadToIpfs(file) {
 
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
+    if (res.status === 401 || res.status === 403) {
+      throw new Error(
+        `Pinata menolak JWT (${res.status}). Pastikan key punya izin org:files:write dan belum kedaluwarsa.`
+      );
+    }
     throw new Error(`Upload ke Pinata gagal (${res.status}). ${detail.slice(0, 200)}`);
   }
 
-  const data = await res.json();
-  if (!data.IpfsHash) {
+  const json = await res.json();
+  const cid = json?.data?.cid;
+  if (!cid) {
     throw new Error("Pinata tidak mengembalikan CID.");
   }
-  return data.IpfsHash;
+  return cid;
 }
