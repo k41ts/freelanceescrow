@@ -8,7 +8,7 @@ const REVIEW_PERIODS = [
   { label: "7 hari (nilai produksi)", value: 7 * 24 * 60 * 60 },
 ];
 
-export function CreateProject({ onCreated, onCancel }) {
+export function CreateProject({ account, onCreated, onCancel }) {
   const [title, setTitle] = useState("");
   const [freelancer, setFreelancer] = useState("");
   const [arbitrator, setArbitrator] = useState("");
@@ -52,6 +52,19 @@ export function CreateProject({ onCreated, onCancel }) {
         Membuat kontrak belum memindahkan dana. Pendanaan dilakukan per milestone setelah kontrak
         dibuat.
       </p>
+
+      {/* Klien tidak punya kolom input: contract mengambilnya dari msg.sender,
+          yaitu penanda tangan transaksi. Ditampilkan di sini supaya jelas
+          siapa yang akan tercatat sebagai klien. */}
+      <div className="readonly-field">
+        <span className="readonly-label">Klien</span>
+        <code className="address readonly-value">{account}</code>
+        <small className="muted">
+          Akun MetaMask yang sedang aktif. Contract mencatat klien dari tanda tangan transaksi,
+          jadi alamat ini tidak bisa dan tidak perlu diisi manual. Ganti akun di MetaMask bila
+          ingin klien yang berbeda.
+        </small>
+      </div>
 
       <label>
         Judul proyek

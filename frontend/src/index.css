@@ -412,6 +412,25 @@ h2 {
   font-size: 14px;
 }
 
+.readonly-field {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.readonly-label {
+  font-size: 14px;
+}
+
+.readonly-value {
+  justify-self: start;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 .form input,
 .form select {
   background: var(--bg);

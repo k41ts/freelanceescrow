@@ -80,7 +80,11 @@ export default function App() {
         )}
 
         {ready && view.name === "create" && (
-          <CreateProject onCreated={() => setView({ name: "list" })} onCancel={() => setView({ name: "list" })} />
+          <CreateProject
+            account={account}
+            onCreated={() => setView({ name: "list" })}
+            onCancel={() => setView({ name: "list" })}
+          />
         )}
 
         {ready && view.name === "detail" && (
