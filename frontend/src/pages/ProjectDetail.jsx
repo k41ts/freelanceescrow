@@ -72,7 +72,15 @@ export function ProjectDetail({ projectId, account, onBack }) {
         </div>
         <div>
           <dt>Batas review</dt>
-          <dd>{(Number(project.reviewPeriod) / 60).toFixed(0)} menit</dd>
+          {/* Satuan menyesuaikan besarannya: 20 detik jangan dibulatkan jadi
+              "0 menit", dan 1 hari jangan ditampilkan sebagai "1440 menit". */}
+          <dd>
+            {Number(project.reviewPeriod) < 60
+              ? `${Number(project.reviewPeriod)} detik`
+              : Number(project.reviewPeriod) < 86400
+                ? `${Math.round(Number(project.reviewPeriod) / 60)} menit`
+                : `${Math.round(Number(project.reviewPeriod) / 86400)} hari`}
+          </dd>
         </div>
       </div>
 

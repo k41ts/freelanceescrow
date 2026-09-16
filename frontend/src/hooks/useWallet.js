@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { SEPOLIA_CHAIN_ID_HEX } from "../lib/contract";
+import { getDemoAccount, isDemoMode, subscribeDemo } from "../lib/demo";
 
 /**
  * Mengelola koneksi MetaMask dan memastikan pengguna berada di Sepolia.
@@ -11,6 +12,10 @@ export function useWallet() {
   const [chainId, setChainId] = useState(null);
   const [error, setError] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  // Dipakai hanya untuk memaksa render ulang saat peran demo berganti.
+  const [, setDemoTick] = useState(0);
+
+  useEffect(() => subscribeDemo(() => setDemoTick((n) => n + 1)), []);
 
   const hasMetaMask = typeof window !== "undefined" && Boolean(window.ethereum);
   const isCorrectNetwork = chainId === SEPOLIA_CHAIN_ID_HEX;
@@ -92,6 +97,22 @@ export function useWallet() {
       }
     }
   }, []);
+
+  // Mode demo memalsukan wallet sepenuhnya: tidak ada MetaMask, tidak ada jaringan.
+  // Berganti peran cukup mengubah alamat yang dikembalikan, sehingga seluruh UI
+  // yang menyesuaikan peran ikut berubah tanpa perlu diubah sedikit pun.
+  if (isDemoMode()) {
+    return {
+      account: getDemoAccount().address,
+      chainId: SEPOLIA_CHAIN_ID_HEX,
+      error: null,
+      isConnecting: false,
+      hasMetaMask: true,
+      isCorrectNetwork: true,
+      connect: () => {},
+      switchToSepolia: () => {},
+    };
+  }
 
   return {
     account,

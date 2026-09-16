@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { getWriteContract, humanizeError, parseEther } from "../lib/contract";
 
+// Urutan sengaja begini: yang pertama menjadi nilai default.
+// Sebelumnya 3 menit ada di urutan pertama, sehingga auto-release selalu
+// menyala lebih dulu dan alur approve tidak pernah sempat didemokan.
 const REVIEW_PERIODS = [
-  { label: "3 menit (untuk demo)", value: 3 * 60 },
-  { label: "5 menit (untuk demo)", value: 5 * 60 },
-  { label: "1 hari", value: 24 * 60 * 60 },
-  { label: "7 hari (nilai produksi)", value: 7 * 24 * 60 * 60 },
+  { label: "1 hari — aman untuk demo approve", value: 24 * 60 * 60 },
+  { label: "7 hari — nilai produksi", value: 7 * 24 * 60 * 60 },
+  { label: "5 menit — khusus demo auto-release", value: 5 * 60 },
+  { label: "3 menit — khusus demo auto-release (cepat)", value: 3 * 60 },
 ];
 
 export function CreateProject({ account, onCreated, onCancel }) {
@@ -106,7 +109,8 @@ export function CreateProject({ account, onCreated, onCancel }) {
           ))}
         </select>
         <small className="muted">
-          Saat presentasi pilih 3–5 menit supaya auto-release bisa ditunjukkan langsung.
+          Pakai 1 hari bila ingin mendemokan approve — auto-release tidak akan menyela di
+          tengah penjelasan. Pilih 3–5 menit hanya saat khusus ingin menunjukkan auto-release.
         </small>
       </label>
 

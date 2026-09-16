@@ -62,6 +62,62 @@ body {
   text-transform: uppercase;
 }
 
+/* ---------- Mode demo ---------- */
+.demo-off {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.demo-bar {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  background: linear-gradient(150deg, rgba(240, 180, 41, 0.16), rgba(240, 180, 41, 0.05));
+  border: 1px solid rgba(240, 180, 41, 0.38);
+  border-radius: 12px;
+}
+
+.demo-bar-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.demo-bar-head strong {
+  color: var(--warn);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.demo-bar-head span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.demo-bar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.demo-label {
+  margin-right: 2px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.demo-spacer {
+  flex: 1;
+  min-width: 8px;
+}
+
 /* ---------- Topbar ---------- */
 .topbar {
   display: flex;

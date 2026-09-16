@@ -9,6 +9,8 @@
  * sehingga JWT tidak pernah sampai ke browser.
  */
 
+import { demoUpload, isDemoMode } from "./demo";
+
 const PINATA_JWT = import.meta.env.VITE_PINATA_JWT ?? "";
 const PINATA_GATEWAY = import.meta.env.VITE_PINATA_GATEWAY ?? "https://gateway.pinata.cloud";
 
@@ -18,6 +20,9 @@ const PINATA_GATEWAY = import.meta.env.VITE_PINATA_GATEWAY ?? "https://gateway.p
 const PINATA_UPLOAD_URL = "https://uploads.pinata.cloud/v3/files";
 
 export function isPinataConfigured() {
+  // Di mode demo tidak ada upload sungguhan, jadi peringatan konfigurasi
+  // tidak perlu muncul dan alurnya tetap bisa diperagakan.
+  if (isDemoMode()) return true;
   return PINATA_JWT.length > 0;
 }
 
@@ -33,7 +38,9 @@ export function gatewayUrl(cid) {
  *   supaya biaya gas tetap murah (slide 8).
  */
 export async function uploadToIpfs(file) {
-  if (!isPinataConfigured()) {
+  if (isDemoMode()) return demoUpload(file);
+
+  if (!PINATA_JWT) {
     throw new Error("VITE_PINATA_JWT belum diisi di frontend/.env");
   }
 

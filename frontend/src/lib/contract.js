@@ -1,5 +1,6 @@
 import { BrowserProvider, Contract, formatEther, parseEther } from "ethers";
 import abi from "./FreelanceEscrow.abi.json";
+import { demoFetchProjectDetail, demoFetchProjects, getDemoContract, isDemoMode } from "./demo";
 
 export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS ?? "";
 export const SEPOLIA_CHAIN_ID = 11155111n;
@@ -45,6 +46,9 @@ export async function getReadContract() {
 
 /** Contract untuk transaksi; memicu MetaMask saat dipanggil. */
 export async function getWriteContract() {
+  // Mode demo memakai contract tiruan di memori, tanpa wallet dan tanpa jaringan.
+  if (isDemoMode()) return getDemoContract();
+
   if (!CONTRACT_ADDRESS) {
     throw new Error("VITE_CONTRACT_ADDRESS belum diisi di frontend/.env");
   }
@@ -82,6 +86,8 @@ export const ROLE_LABEL = {
  * Menelusuri id jauh lebih andal karena hanya memakai eth_call biasa.
  */
 export async function fetchProjects(account) {
+  if (isDemoMode()) return demoFetchProjects(account);
+
   const contract = await getReadContract();
   const nextId = await contract.nextProjectId();
 
@@ -108,6 +114,8 @@ export async function fetchProjects(account) {
 }
 
 export async function fetchProjectDetail(projectId) {
+  if (isDemoMode()) return demoFetchProjectDetail(projectId);
+
   const contract = await getReadContract();
   const [project, milestones] = await Promise.all([
     contract.getProject(projectId),
