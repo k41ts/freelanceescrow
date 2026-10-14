@@ -1,26 +1,50 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWallet } from "./hooks/useWallet";
 import { CONTRACT_ADDRESS } from "./lib/contract";
 import { Address } from "./components/RoleBadge";
 import { DemoBar } from "./components/DemoBar";
-import { isDemoMode } from "./lib/demo";
+import { Mark } from "./components/Mark";
+import { enableDemo, isDemoMode } from "./lib/demo";
 import { ProjectList } from "./pages/ProjectList";
 import { ProjectDetail } from "./pages/ProjectDetail";
 import { CreateProject } from "./pages/CreateProject";
+import { Landing } from "./pages/Landing";
 
-const Mark = () => (
-  <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
-    <rect x="1" y="1" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" />
-    <rect x="9" y="9" width="16" height="16" fill="var(--vault)" />
-  </svg>
-);
+// Landing di "/", aplikasi di "#app" supaya muat ulang tidak melempar balik ke landing.
+const inApp = () => window.location.hash === "#app";
 
 export default function App() {
   const { account, isCorrectNetwork, hasMetaMask, isConnecting, error, connect, switchToSepolia } = useWallet();
   const [view, setView] = useState({ name: "list" });
+  const [showApp, setShowApp] = useState(inApp);
+
+  useEffect(() => {
+    const onHash = () => {
+      setShowApp(inApp());
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
 
   const ready = hasMetaMask && account && isCorrectNetwork && (CONTRACT_ADDRESS || isDemoMode());
   const demo = isDemoMode();
+
+  if (!showApp) {
+    return (
+      <Landing
+        onOpenApp={() => (window.location.hash = "app")}
+        onConnect={() => {
+          window.location.hash = "app";
+          if (hasMetaMask) connect();
+        }}
+        onTryDemo={() => {
+          enableDemo();
+          window.location.hash = "app";
+        }}
+      />
+    );
+  }
 
   return (
     <div className="app">
@@ -28,7 +52,14 @@ export default function App() {
       <p className="sim-banner">Simulasi akademik di Sepolia testnet. Bukan alat pembayaran.</p>
 
       <header className="topbar container">
-        <button type="button" className="brand" onClick={() => setView({ name: "list" })}>
+        <button
+          type="button"
+          className="brand"
+          onClick={() => {
+            setView({ name: "list" });
+            window.location.hash = "";
+          }}
+        >
           <Mark />
           <span>Escrow</span>
         </button>
