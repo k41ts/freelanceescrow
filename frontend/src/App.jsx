@@ -34,10 +34,6 @@ export default function App() {
     return (
       <Landing
         onOpenApp={() => (window.location.hash = "app")}
-        onConnect={() => {
-          window.location.hash = "app";
-          if (hasMetaMask) connect();
-        }}
         onTryDemo={() => {
           enableDemo();
           window.location.hash = "app";

@@ -167,7 +167,9 @@ const EXITS = [
   },
 ];
 
-export function Landing({ onOpenApp, onConnect, onTryDemo }) {
+const REPO_URL = "https://github.com/k41ts/freelanceescrow";
+
+export function Landing({ onOpenApp, onTryDemo }) {
   return (
     <div className="app landing">
       <p className="sim-banner">Simulasi akademik di Sepolia testnet. Bukan alat pembayaran.</p>
@@ -193,8 +195,8 @@ export function Landing({ onOpenApp, onConnect, onTryDemo }) {
               memutuskan.
             </p>
             <div className="row gap-sm">
-              <button type="button" className="btn btn-dark" onClick={onConnect}>
-                Hubungkan wallet
+              <button type="button" className="btn btn-dark" onClick={onOpenApp}>
+                Buka aplikasi
               </button>
               <button type="button" className="btn btn-outline" onClick={onTryDemo}>
                 Coba tanpa wallet
@@ -268,8 +270,15 @@ export function Landing({ onOpenApp, onConnect, onTryDemo }) {
         </section>
       </main>
 
+      {/* Identitas tim dan kode sumber sengaja ditampilkan: halaman phishing
+          justru anonim, dan filter web menilai sinyal seperti ini. */}
       <footer className="footer container">
-        <span>DTSC6018001, BINUS University</span>
+        <span>
+          Proyek kuliah DTSC6018001, BINUS University. Nicholas, Evan, Kai, Akmal, Tafarel.{" "}
+          <a href={REPO_URL} target="_blank" rel="noreferrer">
+            Kode sumber di GitHub
+          </a>
+        </span>
         <span>Di Indonesia hanya Rupiah yang sah sebagai alat pembayaran (UU No. 7/2011 Pasal 21).</span>
       </footer>
     </div>
