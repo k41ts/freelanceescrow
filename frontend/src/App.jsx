@@ -8,75 +8,95 @@ import { ProjectList } from "./pages/ProjectList";
 import { ProjectDetail } from "./pages/ProjectDetail";
 import { CreateProject } from "./pages/CreateProject";
 
+const Mark = () => (
+  <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+    <rect x="1" y="1" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" />
+    <rect x="9" y="9" width="16" height="16" fill="var(--vault)" />
+  </svg>
+);
+
 export default function App() {
   const { account, isCorrectNetwork, hasMetaMask, isConnecting, error, connect, switchToSepolia } = useWallet();
   const [view, setView] = useState({ name: "list" });
 
   const ready = hasMetaMask && account && isCorrectNetwork && (CONTRACT_ADDRESS || isDemoMode());
+  const demo = isDemoMode();
 
   return (
     <div className="app">
       {/* Banner ini sengaja permanen - posisi hukum proyek (slide 15-16). */}
-      <div className="sim-banner">
-        Simulasi akademik · Sepolia testnet · bukan alat pembayaran
-      </div>
+      <p className="sim-banner">Simulasi akademik di Sepolia testnet. Bukan alat pembayaran.</p>
 
-      {/* Sengaja tanpa onChange: berpindah peran tidak boleh melempar pengguna
-          kembali ke daftar. useWallet sudah berlangganan perubahan demo, jadi
-          App ikut render ulang sendiri dan halaman detail yang sedang terbuka
-          langsung menampilkan tombol milik peran yang baru. */}
-      <DemoBar />
-
-      <header className="topbar">
-        <div className="brand">
-          <h1>Freelance Escrow</h1>
-          <span className="muted">Pembayaran freelance berbasis smart contract</span>
-        </div>
-
-        <div className="wallet">
-          {account ? (
-            <>
+      <header className="topbar container">
+        <button type="button" className="brand" onClick={() => setView({ name: "list" })}>
+          <Mark />
+          <span>Escrow</span>
+        </button>
+        <span className="grow" />
+        {account ? (
+          <>
+            {isCorrectNetwork || demo ? (
+              <span className="network">
+                <span className="dot" />
+                {demo ? "Simulasi" : "Sepolia"}
+              </span>
+            ) : (
+              <button type="button" className="btn btn-primary" onClick={switchToSepolia}>
+                Pindah ke Sepolia
+              </button>
+            )}
+            <span className="wallet">
               <Address value={account} />
-              {isCorrectNetwork ? (
-                <span className="badge badge-ok">Sepolia</span>
-              ) : (
-                <button className="btn btn-primary" onClick={switchToSepolia}>
-                  Pindah ke Sepolia
-                </button>
-              )}
-            </>
-          ) : (
-            <button className="btn btn-primary" onClick={connect} disabled={isConnecting}>
-              {isConnecting ? "Menghubungkan…" : "Hubungkan wallet"}
-            </button>
-          )}
-        </div>
+            </span>
+          </>
+        ) : (
+          <button type="button" className="btn btn-dark" onClick={connect} disabled={isConnecting}>
+            {isConnecting ? "Menghubungkan…" : "Hubungkan wallet"}
+          </button>
+        )}
       </header>
 
-      <main>
+      {/* Sengaja tanpa onChange: berpindah peran tidak boleh melempar pengguna
+          kembali ke daftar. Halaman detail yang terbuka langsung menampilkan
+          tombol milik peran yang baru. */}
+      <div className="container">
+        <DemoBar />
+      </div>
+
+      <main className="container main">
         {error && <p className="error-box">{error}</p>}
 
-        {!hasMetaMask && !isDemoMode() && (
-          <p className="error-box">
-            MetaMask tidak terdeteksi. Pasang ekstensi MetaMask lalu muat ulang halaman ini.
-          </p>
+        {!hasMetaMask && !demo && (
+          <div className="gate">
+            <h1 className="display">Pasang MetaMask dulu</h1>
+            <p className="lede">
+              Escrow ini berjalan di Sepolia testnet dan butuh wallet. Pasang ekstensi MetaMask lalu muat ulang halaman,
+              atau aktifkan mode demo di atas untuk mencoba alurnya tanpa wallet.
+            </p>
+          </div>
         )}
 
-        {!CONTRACT_ADDRESS && !isDemoMode() && (
+        {!CONTRACT_ADDRESS && !demo && (
           <p className="error-box">
-            <code>VITE_CONTRACT_ADDRESS</code> belum diisi. Deploy contract lalu isi{" "}
-            <code>frontend/.env</code>.
+            <code>VITE_CONTRACT_ADDRESS</code> belum diisi. Deploy contract lalu isi <code>frontend/.env</code>.
           </p>
         )}
 
         {hasMetaMask && !account && (
-          <p className="muted">Hubungkan wallet untuk melihat proyek Anda.</p>
+          <div className="gate">
+            <h1 className="display">Hubungkan wallet</h1>
+            <p className="lede">
+              Dana tiap milestone dikunci di smart contract dan hanya cair setelah disetujui, lewat auto-release, atau
+              putusan arbitrator. Hubungkan wallet untuk melihat proyek yang melibatkan Anda.
+            </p>
+            <button type="button" className="btn btn-dark" onClick={connect} disabled={isConnecting}>
+              {isConnecting ? "Menghubungkan…" : "Hubungkan wallet"}
+            </button>
+          </div>
         )}
 
-        {account && !isCorrectNetwork && (
-          <p className="warn">
-            Wallet sedang berada di jaringan lain. Pindah ke Sepolia agar dapat membaca contract.
-          </p>
+        {account && !isCorrectNetwork && !demo && (
+          <p className="warn">Wallet sedang berada di jaringan lain. Pindah ke Sepolia agar dapat membaca contract.</p>
         )}
 
         {ready && view.name === "list" && (
@@ -96,24 +116,23 @@ export default function App() {
         )}
 
         {ready && view.name === "detail" && (
-          <ProjectDetail
-            projectId={view.projectId}
-            account={account}
-            onBack={() => setView({ name: "list" })}
-          />
+          <ProjectDetail projectId={view.projectId} account={account} onBack={() => setView({ name: "list" })} />
         )}
       </main>
 
-      <footer className="footer">
-        <span>DTSC6018001 · BINUS University</span>
+      <footer className="footer container">
+        <span>DTSC6018001, BINUS University</span>
         {CONTRACT_ADDRESS && (
-          <a
-            href={`https://sepolia.etherscan.io/address/${CONTRACT_ADDRESS}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Lihat contract di Etherscan
-          </a>
+          <span>
+            Kontrak <Address value={CONTRACT_ADDRESS} />, terverifikasi di{" "}
+            <a href={`https://eth-sepolia.blockscout.com/address/${CONTRACT_ADDRESS}#code`} target="_blank" rel="noreferrer">
+              Blockscout
+            </a>{" "}
+            dan{" "}
+            <a href={`https://sourcify.dev/server/repo-ui/11155111/${CONTRACT_ADDRESS}`} target="_blank" rel="noreferrer">
+              Sourcify
+            </a>
+          </span>
         )}
       </footer>
     </div>

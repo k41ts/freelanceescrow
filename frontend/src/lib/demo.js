@@ -236,6 +236,7 @@ export function demoFetchProjects(account) {
       createdAt: p.createdAt,
       totalAmount: p.milestones.reduce((s, m) => s + m.amount, 0n),
       milestoneCount: BigInt(p.milestones.length),
+      milestones: p.milestones.map((m) => ({ amount: m.amount, state: STATE[m.state] })),
       role: roleOfDemo(p, account),
     }))
     .reverse();

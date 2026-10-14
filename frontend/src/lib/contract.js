@@ -107,6 +107,7 @@ export async function fetchProjects(account) {
       createdAt: project.createdAt,
       totalAmount,
       milestoneCount: BigInt(milestones.length),
+      milestones: milestones.map((m) => ({ amount: m.amount, state: stateName(m.state) })),
       role: roleOf(project, account),
     });
   }

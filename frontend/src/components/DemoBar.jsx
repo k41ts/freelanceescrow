@@ -13,8 +13,8 @@ import {
 
 /**
  * Bilah kendali mode demo: tombol untuk berpindah peran tanpa wallet.
- * Sengaja dibuat mencolok dan selalu menyebut kata "simulasi", supaya tidak ada
- * yang mengira transaksi di layar ini benar-benar masuk ke blockchain.
+ * Selalu menyebut bahwa datanya simulasi, supaya tidak ada yang mengira
+ * transaksi di layar ini benar-benar masuk ke blockchain.
  */
 export function DemoBar({ onChange }) {
   const [, force] = useState(0);
@@ -23,10 +23,12 @@ export function DemoBar({ onChange }) {
 
   if (!isDemoMode()) {
     return (
-      <div className="demo-off">
+      <div className="demo-strip">
         <span className="muted">Tidak punya MetaMask di komputer ini?</span>
+        <span className="grow" />
         <button
-          className="btn btn-secondary"
+          type="button"
+          className="btn btn-outline btn-sm"
           onClick={() => {
             enableDemo();
             onChange?.();
@@ -41,18 +43,17 @@ export function DemoBar({ onChange }) {
   const role = getDemoRole();
 
   return (
-    <div className="demo-bar">
-      <div className="demo-bar-head">
-        <strong>MODE DEMO</strong>
-        <span>Data simulasi — tidak ada transaksi yang dikirim ke blockchain</span>
-      </div>
-
-      <div className="demo-bar-controls">
-        <span className="demo-label">Tampil sebagai:</span>
+    <div className="demo-strip">
+      <strong>Mode demo</strong>
+      <span className="muted">Data simulasi, tidak ada transaksi yang dikirim.</span>
+      <span className="grow" />
+      <span className="muted">Lihat sebagai</span>
+      <div className="segmented" role="group" aria-label="Peran demo">
         {DEMO_ROLES.map((r) => (
           <button
             key={r}
-            className={`btn ${role === r ? "btn-primary" : "btn-secondary"}`}
+            type="button"
+            aria-pressed={role === r}
             onClick={() => {
               setDemoRole(r);
               onChange?.();
@@ -61,28 +62,27 @@ export function DemoBar({ onChange }) {
             {DEMO_ACCOUNTS[r].label}
           </button>
         ))}
-
-        <span className="demo-spacer" />
-
-        <button
-          className="btn btn-ghost"
-          onClick={() => {
-            resetDemo();
-            onChange?.();
-          }}
-        >
-          Ulang dari awal
-        </button>
-        <button
-          className="btn btn-ghost"
-          onClick={() => {
-            disableDemo();
-            onChange?.();
-          }}
-        >
-          Keluar mode demo
-        </button>
       </div>
+      <button
+        type="button"
+        className="btn btn-ghost btn-sm"
+        onClick={() => {
+          resetDemo();
+          onChange?.();
+        }}
+      >
+        Ulang dari awal
+      </button>
+      <button
+        type="button"
+        className="btn btn-ghost btn-sm"
+        onClick={() => {
+          disableDemo();
+          onChange?.();
+        }}
+      >
+        Keluar mode demo
+      </button>
     </div>
   );
 }
