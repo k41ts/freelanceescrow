@@ -16,7 +16,7 @@ import {
  * Selalu menyebut bahwa datanya simulasi, supaya tidak ada yang mengira
  * transaksi di layar ini benar-benar masuk ke blockchain.
  */
-export function DemoBar({ onChange }) {
+export function DemoBar({ onChange, onReset }) {
   const [, force] = useState(0);
 
   useEffect(() => subscribeDemo(() => force((n) => n + 1)), []);
@@ -69,6 +69,7 @@ export function DemoBar({ onChange }) {
         onClick={() => {
           resetDemo();
           onChange?.();
+          onReset?.();
         }}
       >
         Ulang dari awal

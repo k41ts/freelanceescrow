@@ -17,6 +17,9 @@ export default function App() {
   const { account, isCorrectNetwork, hasMetaMask, isConnecting, error, connect, switchToSepolia } = useWallet();
   const [view, setView] = useState({ name: "list" });
   const [showApp, setShowApp] = useState(inApp);
+  // Dinaikkan saat demo di-reset supaya halaman yang terbuka dipasang ulang
+  // dan memuat data baru, bukan menampilkan state lama.
+  const [demoEpoch, setDemoEpoch] = useState(0);
 
   useEffect(() => {
     const onHash = () => {
@@ -87,10 +90,15 @@ export default function App() {
           kembali ke daftar. Halaman detail yang terbuka langsung menampilkan
           tombol milik peran yang baru. */}
       <div className="container">
-        <DemoBar />
+        <DemoBar
+          onReset={() => {
+            setView({ name: "list" });
+            setDemoEpoch((n) => n + 1);
+          }}
+        />
       </div>
 
-      <main className="container main">
+      <main key={demoEpoch} className="container main">
         {error && <p className="error-box">{error}</p>}
 
         {!hasMetaMask && !demo && (

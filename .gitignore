@@ -26,3 +26,11 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Claude
+.claude/
+claude/
+CLAUDE.md
+CLAUDE.local.md
+graphify-out/
+.playwright-cli/
